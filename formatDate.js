@@ -35,9 +35,7 @@ function formatDate(date) {
     }
     const yesterday = new Date();
     yesterday.setDate(currentDate.getDate() - 1);
-    if (parsedDate.getDate() === yesterday.getDate() 
-        && parsedDate.getFullYear() === yesterday.getFullYear() 
-        && parsedDate.getMonth() === yesterday.getMonth()) {
+    if (parsedDate.toDateString() === yesterday.toDateString()) {
         return 'вчера в ' + getHoursAndMinutes(parsedDate);
     }
     if (parsedDate.getFullYear() === currentDate.getFullYear()) {

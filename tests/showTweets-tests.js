@@ -11,8 +11,8 @@ describe('showTweets', () => {
     });
 
     it('should return tweets and print it to console', done => {
-        const log = sinon.stub(console, 'log');
-        const error = sinon.stub(console, 'error');
+        const log = sinon.spy(console, 'log');
+        const error = sinon.spy(console, 'error');
         const tweets = [
             {
                 'created_at': '2017-05-01T21:15:10.609Z',
@@ -30,17 +30,16 @@ describe('showTweets', () => {
         });
 
         showTweets(() => {
-            assert(log.calledTwice);
-            assert(log.calledWith('1 мая 2017 года в 21:15'));
-            assert(log.calledWith(tweets[0].text));
-            assert(!error.called);
+            assert(log.firstCall.calledWith('1 мая 2017 года в 21:15'));
+            assert(log.secondCall.calledWith(tweets[0].text));
+            assert(error.notCalled);
             done();
         });
     });
 
     it('should throw error when get request error', done => {
-        const log = sinon.stub(console, 'log');
-        const error = sinon.stub(console, 'error');
+        const log = sinon.spy(console, 'log');
+        const error = sinon.spy(console, 'error');
         const errorMessage = 'request error';
         nock('https://api.twitter.com')
             .get('/1.1/search/tweets.json?q=%23urfu-testing-2016')
@@ -48,32 +47,30 @@ describe('showTweets', () => {
         const showTweets = require('../showTweets');
 
         showTweets(() => {
-            assert(error.calledOnce);
-            assert(error.calledWith(errorMessage));
-            assert(!log.called);
+            assert(error.firstCall.calledWith(errorMessage));
+            assert(log.notCalled);
             done();
         });
     });
 
     it('should throw error when result status code is not 200', done => {
-        const log = sinon.stub(console, 'log');
-        const error = sinon.stub(console, 'error');
+        const log = sinon.spy(console, 'log');
+        const error = sinon.spy(console, 'error');
         nock('https://api.twitter.com')
             .get('/1.1/search/tweets.json?q=%23urfu-testing-2016')
             .reply(404, '404 not found');
         const showTweets = require('../showTweets');
 
         showTweets(() => {
-            assert(error.calledOnce);
-            assert(error.calledWith(404));
-            assert(!log.called);
+            assert(error.firstCall.calledWith(404));
+            assert(log.notCalled);
             done();
         });
     });
 
     it('should throw error when get parse error', done => {
-        const log = sinon.stub(console, 'log');
-        const error = sinon.stub(console, 'error');
+        const log = sinon.spy(console, 'log');
+        const error = sinon.spy(console, 'error');
         const fakeJSON = 'this is fake json data } } } ';
         nock('https://api.twitter.com')
             .get('/1.1/search/tweets.json?q=%23urfu-testing-2016')
@@ -82,7 +79,7 @@ describe('showTweets', () => {
 
         showTweets(() => {
             assert(error.calledOnce);
-            assert(!log.called);
+            assert(log.notCalled);
             done();
         });
     });
